@@ -11999,7 +11999,7 @@ div#notebook {
 <span class="k">print</span> <span class="s2">&quot;Total number of records: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_records</span><span class="p">)</span>
 <span class="k">print</span> <span class="s2">&quot;Individuals making more than $50,000: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_greater_50k</span><span class="p">)</span>
 <span class="k">print</span> <span class="s2">&quot;Individuals making at most $50,000: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_at_most_50k</span><span class="p">)</span>
-<span class="k">print</span> <span class="s2">&quot;Percentage of individuals making more than $50,000: {:.2f}%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">greater_percent</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Percentage of individuals making more than $50,000: {:.2f}%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">greater_percent</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12019,7 +12019,7 @@ div#notebook {
 <pre>Total number of records: 45222
 Individuals making more than $50,000: 11208
 Individuals making at most $50,000: 34014
-Percentage of individuals making more than $50,000: 0.25%
+Percentage of individuals making more than $50,000: 24.78%
 </pre>
 </div>
 </div>
@@ -14425,7 +14425,7 @@ Final F-score on the validation data: 0.7611
 <p><strong>回答：</strong></p>
 <ul>
 <li>特征1: <code>capital-gain</code> 选择此 <code>feature</code> 是因为高收入人群的从资本投资中获取收益的可能性更高，而且很可能表现出正相关性</li>
-<li>特征2: <code>capital-loss</code> 选择此 <code>feature</code> 同样是因为上述理由，但是可能存在负相关性</li>
+<li>特征2: <code>capital-loss</code> 选择此 <code>feature</code> 同样是因为资本投资是高收入人群的重要特征，另外相对来说专业人员管理资本损失越小。那么表现出高收入人群的投资损失应该可能相对较小</li>
 <li>特征3: <code>age</code> 选择此 <code>feature</code> 是因为从个人发展角度来考虑。随着年龄增加，精力能力等方面的提升，对收入影响可能出现很强烈的正相关性</li>
 <li>特征4: <code>education_level</code> 选择此 <code>feature</code> 是因为可能会对个人发展以及收入产生影响</li>
 <li>特征5: <code>occupation</code> 选择此 <code>feature</code> 是因为个人职务不同，工作性质等不同可能会对收入产生影响</li>
