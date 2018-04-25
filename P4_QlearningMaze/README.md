@@ -25,3 +25,72 @@ conda env create -f environment.yml
 2. 阅读 `robot_maze.ipynb` 中的指导完成项目，并根据指导修改对应的代码，生成、观察结果。
 3. 导出代码与报告，上传文件，提交审阅并优化。
 
+## 3. 经历问题
+第一次出现无法安装环境,即使用 `conda env create -f envirnment.yml`出现报错信息,相关内容如下:
+
+```
+Solving environment: failed
+
+# >>>>>>>>>>>>>>>>>>>>>> ERROR REPORT <<<<<<<<<<<<<<<<<<<<<<
+
+`$ /Users/username/anaconda3/bin/conda-env create -f environment.yml`
+
+  environment variables:
+                 CIO_TEST=<not set>
+  CONDA_AUTO_UPDATE_CONDA=false
+               CONDA_ROOT=/Users/username/anaconda3
+                     PATH=/Users/username/.cargo/bin:/Users/username/anaconda3/bin:/usr/local/bin:/u
+                          sr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin
+       REQUESTS_CA_BUNDLE=<not set>
+            SSL_CERT_FILE=<not set>
+
+     active environment : None
+       user config file : /Users/username/.condarc
+ populated config files : /Users/username/.condarc
+          conda version : 4.5.0
+    conda-build version : 3.7.2
+         python version : 3.6.5.final.0
+       base environment : /Users/username/anaconda3  (writable)
+           channel URLs : https://repo.anaconda.com/pkgs/main/osx-64
+                          https://repo.anaconda.com/pkgs/main/noarch
+                          https://repo.anaconda.com/pkgs/free/osx-64
+                          https://repo.anaconda.com/pkgs/free/noarch
+                          https://repo.anaconda.com/pkgs/r/osx-64
+                          https://repo.anaconda.com/pkgs/r/noarch
+                          https://repo.anaconda.com/pkgs/pro/osx-64
+                          https://repo.anaconda.com/pkgs/pro/noarch
+          package cache : /Users/username/anaconda3/pkgs
+                          /Users/username/.conda/pkgs
+       envs directories : /Users/username/anaconda3/envs
+                          /Users/username/.conda/envs
+               platform : osx-64
+             user-agent : conda/4.5.0 requests/2.18.4 CPython/3.6.5 Darwin/17.5.0 OSX/10.13.4
+                UID:GID : 501:20
+             netrc file : None
+           offline mode : False
+
+
+V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
+
+CondaHTTPError: HTTP 000 CONNECTION FAILED for url <https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/osx-64/repodata.json>
+Elapsed: -
+
+An HTTP error occurred when trying to retrieve this URL.
+HTTP errors are often intermittent, and a simple retry will get you on your way.
+ConnectionError(ReadTimeoutError("HTTPSConnectionPool(host='mirrors.tuna.tsinghua.edu.cn', port=443): Read timed out.",),)
+
+A reportable application error has occurred. Conda has prepared the above report.
+If submitted, this report will be used by core maintainers to improve
+future releases of conda.
+Would you like conda to send this report to the core maintainers?
+[y/N]: y
+Upload successful.
+
+Thank you for helping to improve conda.
+Opt-in to always sending reports (and not see this message again)
+by running
+
+    $ conda config --set report_errors true
+```
+
+**解决方式**: 经过查看发现是运行了一个 `jupyter notebook`,也就是说启用了一个环境.之后关闭该任务后,安装能够正常进行.
