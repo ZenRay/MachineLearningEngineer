@@ -55,7 +55,7 @@ class Robot(object):
         """
 
         # TODO 3. Return robot's current state
-        return None
+        return self.maze.sense_state()
 
     def create_Qtable_line(self, state):
         """
@@ -66,7 +66,13 @@ class Robot(object):
         # Qtable[state] ={'u':xx, 'd':xx, ...}
         # If Qtable[state] already exits, then do
         # not change it.
-        pass
+        if state not in self.Qtable:
+            self.Qtable[state] = {}
+            for current_action in self.valid_actions:
+                self.Qtable[state][current_action] = self.maze.move_robot(current_action)
+
+        return self.Qtable
+
 
     def choose_action(self):
         """
@@ -77,19 +83,23 @@ class Robot(object):
             # TODO 5. Return whether do random choice
             # hint: generate a random number, and compare
             # it with epsilon
-            pass
+            check_number = random.randint(0, 10) / 10
+
+            return check_number == self.epsilon
 
         if self.learning:
             if is_random_exploration():
                 # TODO 6. Return random choose aciton
-                return None
+                return random.choice(self.valid_actions)
             else:
                 # TODO 7. Return action with highest q value
                 return None
         elif self.testing:
             # TODO 7. choose action with highest q value
+            pass
         else:
             # TODO 6. Return random choose aciton
+            pass
 
     def update_Qtable(self, r, action, next_state):
         """
