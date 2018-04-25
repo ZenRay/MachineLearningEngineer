@@ -1,5 +1,6 @@
 import random
 
+
 class Robot(object):
 
     def __init__(self, maze, alpha=0.5, gamma=0.9, epsilon0=0.5):
@@ -73,7 +74,6 @@ class Robot(object):
 
         return self.Qtable
 
-
     def choose_action(self):
         """
         Return an action according to given rules
@@ -93,13 +93,17 @@ class Robot(object):
                 return random.choice(self.valid_actions)
             else:
                 # TODO 7. Return action with highest q value
-                return None
+                return sorted(self.Qtable[self.state],
+                              key=lambda x: self.Qtable[self.state][x],
+                              reverse=True)[0]
         elif self.testing:
             # TODO 7. choose action with highest q value
-            pass
+            self.action = sorted(self.Qtable[self.state],
+                              key=lambda x: self.Qtable[self.state][x],
+                              reverse=True)[0]
         else:
             # TODO 6. Return random choose aciton
-            pass
+            self.action = random.choice(self.valid_actions)
 
     def update_Qtable(self, r, action, next_state):
         """
@@ -116,17 +120,19 @@ class Robot(object):
         Called every time in every epoch in training or testing.
         Return current action and reward.
         """
-        self.state = self.sense_state() # Get the current state
-        self.create_Qtable_line(self.state) # For the state, create q table line
+        self.state = self.sense_state()  # Get the current state
+        # For the state, create q table line
+        self.create_Qtable_line(self.state)
 
-        action = self.choose_action() # choose action for this state
-        reward = self.maze.move_robot(action) # move robot for given action
+        action = self.choose_action()  # choose action for this state
+        reward = self.maze.move_robot(action)  # move robot for given action
 
-        next_state = self.sense_state() # get next state
-        self.create_Qtable_line(next_state) # create q table line for next state
+        next_state = self.sense_state()  # get next state
+        # create q table line for next state
+        self.create_Qtable_line(next_state)
 
         if self.learning and not self.testing:
-            self.update_Qtable(reward, action, next_state) # update q table
-            self.update_parameter() # update parameters
+            self.update_Qtable(reward, action, next_state)  # update q table
+            self.update_parameter()  # update parameters
 
         return action, reward
