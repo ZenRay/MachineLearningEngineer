@@ -110,9 +110,13 @@ class Robot(object):
         Update the qtable according to the given rule.
         """
         if self.learning:
-            pass
             # TODO 8. When learning, update the q table according
             # to the given rules
+            current_value = r + self.gamma * max(self.Qtable[next_state].values())
+
+            self.Qtable[self.state][action] = current_value
+        return self.Qtable
+
 
     def update(self):
         """
