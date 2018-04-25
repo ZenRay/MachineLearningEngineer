@@ -69,7 +69,7 @@ class Robot(object):
         if state not in self.Qtable:
             self.Qtable[state] = {}
             for current_action in self.valid_actions:
-                self.Qtable[state][current_action] = self.maze.move_robot(current_action)
+                self.Qtable[state][current_action] = 0
 
         return self.Qtable
 
