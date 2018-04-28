@@ -21,11 +21,11 @@ class Robot(object):
         self.Qtable = {}
         self.reset()
 
-        for x in range(self.maze.maze_data.shape[0]):
-            for y in range(self.maze.maze_data.shape[1]):
-                self.Qtable[(x, y)] = {}
-                for action in self.valid_actions:
-                    self.Qtable[(x, y)][action] = 0
+        # for x in range(self.maze.maze_data.shape[0]):
+        #     for y in range(self.maze.maze_data.shape[1]):
+        #         self.Qtable[(x, y)] = {}
+        #         for action in self.valid_actions:
+        #             self.Qtable[(x, y)][action] = 0
 
     def reset(self):
         """
@@ -49,7 +49,7 @@ class Robot(object):
         """
         if self.testing:
             # TODO 1. No random choice when testing
-            self.epsilon = self.epsilon0
+            self.epsilon = 0
         else:
             # TODO 2. Update parameters when learning
             self.t += 1
@@ -75,11 +75,7 @@ class Robot(object):
         # If Qtable[state] already exits, then do
         # not change it.
 
-        if state not in self.Qtable:
-            self.Qtable[state] = {}
-            for current_action in self.valid_actions:
-                self.Qtable[state][current_action] = self.maze.move_robot(
-                    current_action)
+        self.Qtable.setdefault(state, {a: 0.0 for a in self.valid_actions})
 
         return self.Qtable
 
@@ -124,16 +120,12 @@ class Robot(object):
         if self.learning:
             # TODO 8. When learning, update the q table according
             # to the given rules
-            future_rewards = []
+            future_rewards = max(self.Qtable[next_state].values())
 
-            for next_action in self.valid_actions:
-                future_rewards.append(self.Qtable[next_state][next_action])
-            update_value = r + self.gamma * \
-                max(future_rewards)
+            update_value = r + self.gamma * future_rewards
 
             self.Qtable[self.state][action] = (1 - self.alpha) * \
                 self.Qtable[self.state][action] + self.alpha * update_value
-
 
         return self.Qtable
 
