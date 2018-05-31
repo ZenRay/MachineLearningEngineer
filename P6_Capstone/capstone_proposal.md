@@ -48,15 +48,23 @@
 |Promo2Since|描述了开始参与连续性促销的日期|`Promo2SinceWeek`=参与促销的月份;`Promo2SinceYear`=参与促销的年份|
 |PromoInterval|描述有连续性促销的间隔|哪些月份有连续性促销|
 
-本数据集中总共可以使用的 `features` 数量为 `18`，而数据量为 `1,017,209` 条记录。同时从以上的 `features` 描述和应当使用的数据类型来看，某些数据是连续性数值数据，例如：`Sales`,`StoreType`,`Customers`,`CompetitionDistance`；离散型二分类数据，以 `0` 和 `1` 的数值来表达一些特殊性信息，例如：`Open`, `Promo`,`Promo2`,`SchoolHoliday`；离散型多分类数据，通过不同的字符表示不同信息，例如：`StateHoliday`,`StoreType`,`Assortment`；序列型数据，主要为序号以及日期类型数据；另外有一类是文本描述类数据，例如:`PromoInterval`。对现有 `features` 进行绘图，如下：
+本数据集中总共可以使用的 `features` 数量为 `18`，而数据量为 `1,017,209` 条记录。同时从以上的 `features` 描述和应当使用的数据类型来看，某些数据是连续性数值数据，例如：`Sales`,`Customers`,`CompetitionDistance`；离散型二分类数据，以 `0` 和 `1` 的数值来表达一些特殊性信息，例如：`Open`, `Promo`,`Promo2`,`SchoolHoliday`；离散型多分类数据，通过不同的字符表示不同信息，例如：`StateHoliday`,`StoreType`,`Assortment`；序列型数据，主要为序号以及日期类型数据；另外有一类是文本描述类数据，例如:`PromoInterval`。对现有 `features` 进行绘图，如下：
 
 ![](img/scatter_matrix.png)
 
+其中对 `Sales`,`Customers` 进行分析，可知两者是偏态分布的。而且在 `Sales` 的数据中，数据为 `0` 的数据量详情如下：
+
+![](img/sales_distribution.png)
 
 ### 解决方法描述
-从前面的数据初步探索和 `features` 特点来看，该数据集中有大量的 `category data`。因此在进行了异常值探寻之后，在特征工程的阶段需要对数据的 `features` 要进行筛选以及重新构造以筛选出可用的 `features`。而 `features` 的构建依据前人进行的探索${^{[4, 5]}}$，以及实际情况，一方面需要从日期的角度进行新的构建；另一方面，考虑到数据量足够大，对分类型数据需要尝试新的编码，以可构建可用的 `features`。在完成以上步骤之后，需要筛选出合适的 `features` 才能进行进行模型构建。
+从前面的数据初步探索和 `features` 特点来看，该数据集中有大量的 `category data`。因此在进行了异常值探寻之后，在特征工程的阶段需要对数据的 `features` 要进行筛选以及重新构造以筛选出可用的 `features`。而 `features` 的构建依据前人进行的探索${^{[4, 5]}}$，以及实际情况，一方面需要从日期的角度进行新的构建；另一方面，考虑到数据量足够大，对分类型数据需要尝试新的编码，以可构建可用的 `features`。在完成以上步骤之后，需要筛选出合适的 `features` 才能进行进行模型构建。模型构建方面，根据 `Kaggle` 目前已有的优异探索结果来看，使用了 `XGBoost`。在进行尝试阶段，还是优先尝试 `XGBoost`，之后还需要进行其他尝试。
 
 ### 评估标准
+根据项目发起人的要求，项目最终评价指标是使用`RMSPE`(即：`Root Mean Square Percentage Error`)${^{[1,6]}}$，其计算公式如下：
+
+${RMSPE=\sqrt{\frac{1}{n}\Sigma_{i=1}^{n}(\frac{y_i-\hat{y_i}}{y_i})^2}}$
+
+
 
 
 ### 参考
@@ -67,3 +75,4 @@
 4. [A Journey through Rossmann Stores
 ](https://www.kaggleusercontent.com/kf/106951/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..Waj-Z1GxxIgh23xsbs4Ngg.f9nJJwNdjWqHqoz5u864wMEFCjrp273ZBgf-Xranw1DHHK--MnhX4RV661nPEOBR9zdTjhMN4SiFJ7DevEmFq31QxKl7l-xOdYw-aDiM7MGjwocGMKsc1G8dMnUxw6BEuH19F-L22iBnEPC8zmo485Uxz1eeRMogdY8AjO58qhs.h6ejXSs2vKEPhxgtivBn9A/output.html)
 5. [Rossmann Exploratory Analysis](https://www.kaggleusercontent.com/kf/124149/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.._fhhtixYhS4PxlWDXvVKfQ.sIgrnBLygm4AHX58Kw-2zBIdDTvbSS8YleTFWFSOXDV7_FnARDpIhGMax9TeFadYq-W9InNhlYV94S5SzIkV7NiQR_hA6aaJk7WOGqcbdU3Ng4tXxnzC_g4a4pyHPd5Z69zLBtOmiInL6DREtH7X6Q.aU-WTP6xkcqTsmJ8vIk4dA/output.html)
+6. [Scoring Measures for Prediction Problems.pdf](http://faculty.smu.edu/tfomby/eco5385_eco6380/lecture/Scoring%20Measures%20for%20Prediction%20Problems.pdf)
