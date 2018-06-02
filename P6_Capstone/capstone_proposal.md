@@ -50,13 +50,18 @@
 |Promo2Since|描述了开始参与连续性促销的日期|`Promo2SinceWeek`=参与促销的月份;`Promo2SinceYear`=参与促销的年份|
 |PromoInterval|描述有连续性促销的间隔|哪些月份有连续性促销|
 
-本数据集中总共可以使用的 `features` 数量为 `18`，而数据量为 `1,017,209` 条记录。同时从以上的 `features` 描述和应当使用的数据类型来看，某些数据是连续性数值数据，例如：`Sales`,`Customers`,`CompetitionDistance`；离散型二分类数据，以 `0` 和 `1` 的数值来表达一些特殊性信息，例如：`Open`, `Promo`,`Promo2`,`SchoolHoliday`；离散型多分类数据，通过不同的字符表示不同信息，例如：`StateHoliday`,`StoreType`,`Assortment`；序列型数据，主要为序号以及日期类型数据；另外有一类是文本描述类数据，例如:`PromoInterval`。对现有 `features` 进行绘图，如下：
+从以上的 `features` 描述和应当使用的数据类型来看，某些数据是连续性数值数据，例如：`Sales`,`Customers`,`CompetitionDistance`；离散型二分类数据，以 `0` 和 `1` 的数值来表达一些特殊性信息，例如：`Open`, `Promo`,`Promo2`,`SchoolHoliday`；离散型多分类数据，通过不同的字符表示不同信息，例如：`StateHoliday`,`StoreType`,`Assortment`；序列型数据，主要为序号以及日期类型数据；另外有一类是文本描述类数据，例如:`PromoInterval`。对现有 `features` 进行绘图，如下：
 
 ![](img/scatter_matrix.png)
 
 其中对 `Sales`,`Customers` 进行分析，可知两者是偏态分布的，数据分布详情详情如下：
 
 ![](img/sales_distribution.png)
+
+本数据集中总共可以使用的 `features` 数量为 `18`，而数据量为 `1,017,209` 条记录。对各 `features` 的缺失值情况进行分析，发现在 `CompetitionDistance`、`CompetitionOpenSinceMonth`、`CompetitionOpenSinceYear`、`Promo2SinceWeek`、`Promo2SinceYear` 以及 `PromoInterval`。从缺失情况来看，数据的整洁性较高——因为以上的 `features` 缺失具有一定的合理性。对 `Promo2` 进行分析，发现其值在为 `0` 时的数量为 `508,031` ，和`Promo2SinceWeek`、`Promo2SinceYear` 以及 `PromoInterval` 三者的数量一致。
+
+![](img/missing_value.png)
+
 
 ### 解决方法描述
 从前面的数据初步探索和 `features` 特点来看，该数据集中有大量的 `category data`。因此在进行了异常值探寻之后，在特征工程的阶段需要对数据的 `features` 要进行筛选以及重新构造以筛选出可用的 `features`。而 `features` 的构建依据前人进行的探索${^{[4, 5]}}$，以及实际情况，一方面需要从日期的角度进行新的构建；另一方面，考虑到数据量足够大，对分类型数据需要尝试新的编码，以可构建可用的 `features`。在完成以上步骤之后，需要筛选出合适的 `features` 才能进行进行模型构建。模型构建方面，根据 `Kaggle` 目前已有的优异探索结果来看，使用了 `XGBoost`。在进行尝试阶段，还是优先尝试 `XGBoost`，之后还需要进行其他尝试。
