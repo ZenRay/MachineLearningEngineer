@@ -66,6 +66,8 @@
 ### 解决方法描述
 从前面的数据初步探索和 `features` 特点来看，该数据集中有大量的 `category data`。因此在进行了异常值探寻之后，在特征工程的阶段需要对数据的 `features` 要进行筛选以及重新构造以筛选出可用的 `features`。而 `features` 的构建依据前人进行的探索${^{[4, 5]}}$，以及实际情况，一方面需要从日期的角度进行新的构建；另一方面，考虑到数据量足够大，对分类型数据需要尝试新的编码，以可构建可用的 `features`。在完成以上步骤之后，需要筛选出合适的 `features` 才能进行进行模型构建。模型构建方面，根据 `Kaggle` 目前已有的优异探索结果来看，使用了 `XGBoost`。在进行尝试阶段，还是优先尝试 `XGBoost`，之后还需要进行其他尝试。
 
+`XGBoost` 是基于 `Gradient Boosting Decision Tree` 的算法，它不仅可以被用于解决分类问题还有可以解决回归问题。在算法上，它依据通过将多个弱分类器组合，同时结合了梯度下降的算法来最小化损失以提高准确率。而且它具有计算速度快，模型表现好的特点——这在目前的 `kaggle` 竞赛结果中已有体现${^{[9]}}$。
+
 ### 评估标准
 
 **基准模型选择**
@@ -78,6 +80,8 @@
 
 <img src="https://latex.codecogs.com/gif.latex?{RMSPE=\sqrt{\frac{1}{n}\Sigma_{i=1}^{n}(\frac{y_i-\hat{y_i}}{y_i})^2}}" title="{RMSPE=\sqrt{\frac{1}{n}\Sigma_{i=1}^{n}(\frac{y_i-\hat{y_i}}{y_i})^2}}" align="center"/>
 
+该指标和另一个常用的评估指标 `MPE`相比， 一方面避免了因方向和绝对大小，导致评估范围过大和计算误导。使用 `RMSPE` 的优势在时间序列上能够比较真实的变化比例，同时也能计算出平均的百分比变化${^{[7,8]}}$。
+
 ### 项目流程
 整体的项目流程如下：
 
@@ -89,7 +93,10 @@
 1. [Rossmann Store Sales.](https://www.kaggle.com/c/rossmann-store-sales)
 2. [Machine learning .](https://en.wikipedia.org/wiki/Machine_learning)
 3. [Machine Learning for Humans.](https://medium.com/machine-learning-for-humans/why-machine-learning-matters-6164faf1df12)
-4. [A Journey through Rossmann Stores
+4. [A Journey through Rossmann Stores.
 ](https://www.kaggleusercontent.com/kf/106951/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..Waj-Z1GxxIgh23xsbs4Ngg.f9nJJwNdjWqHqoz5u864wMEFCjrp273ZBgf-Xranw1DHHK--MnhX4RV661nPEOBR9zdTjhMN4SiFJ7DevEmFq31QxKl7l-xOdYw-aDiM7MGjwocGMKsc1G8dMnUxw6BEuH19F-L22iBnEPC8zmo485Uxz1eeRMogdY8AjO58qhs.h6ejXSs2vKEPhxgtivBn9A/output.html)
-5. [Rossmann Exploratory Analysis](https://www.kaggleusercontent.com/kf/124149/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.._fhhtixYhS4PxlWDXvVKfQ.sIgrnBLygm4AHX58Kw-2zBIdDTvbSS8YleTFWFSOXDV7_FnARDpIhGMax9TeFadYq-W9InNhlYV94S5SzIkV7NiQR_hA6aaJk7WOGqcbdU3Ng4tXxnzC_g4a4pyHPd5Z69zLBtOmiInL6DREtH7X6Q.aU-WTP6xkcqTsmJ8vIk4dA/output.html)
-6. [Scoring Measures for Prediction Problems](http://faculty.smu.edu/tfomby/eco5385_eco6380/lecture/Scoring%20Measures%20for%20Prediction%20Problems.pdf)
+5. [Rossmann Exploratory Analysis.](https://www.kaggleusercontent.com/kf/124149/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.._fhhtixYhS4PxlWDXvVKfQ.sIgrnBLygm4AHX58Kw-2zBIdDTvbSS8YleTFWFSOXDV7_FnARDpIhGMax9TeFadYq-W9InNhlYV94S5SzIkV7NiQR_hA6aaJk7WOGqcbdU3Ng4tXxnzC_g4a4pyHPd5Z69zLBtOmiInL6DREtH7X6Q.aU-WTP6xkcqTsmJ8vIk4dA/output.html)
+6. [Scoring Measures for Prediction Problems.](http://faculty.smu.edu/tfomby/eco5385_eco6380/lecture/Scoring%20Measures%20for%20Prediction%20Problems.pdf)
+7. [An Evaluation of Alternative Forecasting Methods to Recreation Visitation.](https://www.nrpa.org/globalassets/journals/jlr/2003/volume-35/jlr-volume-35-number-4-pp-441-454.pdf)
+8. [Methodology of forecast errors evaluation methods.](https://marswiki.jrc.ec.europa.eu/agri4castwiki/index.php/Methodology_of_forecast_errors_evaluation_methods)
+9. [Kaggle 神器 xgboost.](https://www.jianshu.com/p/7e0e2d66b3d4)
