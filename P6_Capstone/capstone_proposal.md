@@ -76,9 +76,7 @@
 **评估指标**
 根据项目发起人的要求，项目最终评价指标是使用`RMSPE`(即：`Root Mean Square Percentage Error`)${^{[1,6]}}$，其计算公式如下：
 
-$$
-{RMSPE=\sqrt{\frac{1}{n}\Sigma_{i=1}^{n}(\frac{y_i-\hat{y_i}}{y_i})^2}}
-$$
+<img src="https://latex.codecogs.com/gif.latex?{RMSPE=\sqrt{\frac{1}{n}\Sigma_{i=1}^{n}(\frac{y_i-\hat{y_i}}{y_i})^2}}" title="{RMSPE=\sqrt{\frac{1}{n}\Sigma_{i=1}^{n}(\frac{y_i-\hat{y_i}}{y_i})^2}}" align="center"/>
 
 ### 项目流程
 整体的项目流程如下：
