@@ -28,3 +28,85 @@ def load_data(path, file_name, dtype:dict =None, converters:dict =None):
             df = pd.read_csv(file, dtype=dtype, converters=converters)
 
     return df
+
+
+def collect_data(train_data, test_data, store_data):
+    """
+    collect the dataset into a new variable
+
+    Params:
+        (DataFrame) train_data - dataframe stores the train dataset
+        (DataFrame) test_data - dataframe stores the test dataset
+        (DataFrame) store_data - dataframe stores the store dataset
+    Result:
+        (DataFrame) result - dataframe store the dataset collected
+    """
+
+    # create a tag to differentiate between the train dataset and the test dataset
+    train_data.loc[:, "Tag"] = "train"
+    test_data.loc[:, "Tag"] = "test"
+
+    # assign 1 to the open with missing value in the test dataset
+    test_data["Open"].fillna(1, inplace=True)
+    
+    # drop the dupilcate feature in the test dataset
+    test_data.drop("Id", axis=1, inplace=True)
+
+    # drop the sales 0 with the open 0 in the train dataset
+    train_data = train_data.loc[((train_data["Sales"] !=0) & (train_data["Open"]!=0))]
+
+    # fill the missing value about the store's competitionDistance, 
+    # CompetitionOpenSinceMonth and competitionsinceyear with median value
+    store_data["CompetitionDistance"].fillna(
+        store_data["CompetitionDistance"].median(), inplace=True)
+    store_data["CompetitionOpenSinceMonth"].fillna(
+        store_data["CompetitionOpenSinceMonth"].median(),inplace=True)
+    store_data["CompetitionOpenSinceYear"].fillna(
+        store_data["CompetitionOpenSinceYear"].median(),inplace=True)
+    
+    # dummy variable about the category variable that like storetype, assortment
+    # in the store dataset
+    store_data = store_data.merge(pd.get_dummies(store_data["StoreType"], prefix="StoreType"),
+        on=store_data.index, validate="1:1", how="left")
+    store_data.drop(["StoreType", "StoreType_d", "key_0"], axis=1, inplace=True)
+
+    store_data = store_data.merge(pd.get_dummies(store_data["Assortment"], prefix="Assortment"),
+        on=store_data.index, validate="1:1")
+    store_data.drop(["Assortment", "Assortment_c", "key_0"], axis=1, inplace=True)
+
+    # dummy variable about the category variable that like stateholiday in the
+    # train dataset andt in the test dataset
+    state_holiday = {"a":"Public", "b":"Easter", "c":"Christmas", "0":"No"}
+
+    train_data = train_data.merge(pd.get_dummies(train_data["StateHoliday"].map(state_holiday), 
+        prefix="StateHoliday"), on=train_data.index)
+    train_data.drop(["StateHoliday_No", "StateHoliday", "key_0"], axis=1, 
+        inplace=True)
+
+    test_data = test_data.merge(pd.get_dummies(test_data["StateHoliday"].map(state_holiday), 
+        prefix="StateHoliday"), on=test_data.index)
+    test_data.drop(["StateHoliday", "StateHoliday_No", "key_0"], axis=1,
+        inplace=True)
+
+    # transform the sales and the customers about the train dataset by using log
+    train_data["Sales"] = train_data["Sales"].apply(np.log1p)
+    train_data["Customers"] = train_data["Customers"].apply(np.log1p)
+
+    # merge the train dataset, the test dataset and the test dataset into the result
+    result = pd.concat([train_data, test_data], ignore_index=True, sort=False)
+    result = result.merge(store_data, on="Store", sort=False)
+
+    # dummy variable about the dayofweek in the dataset
+    result = result.merge(pd.get_dummies(result["DayOfWeek"], prefix="DayOfWeek"),
+        on=result.index)
+    result.drop(["DayOfWeek", "DayOfWeek_7", "key_0"], axis=1, inplace=True)
+
+    # parse the date into month, year, dayofmonth, weekofyear, dayofyear
+    result["Year"] = result["Date"].dt.year
+    result["Month"] = result["Date"].dt.month
+    result["DayOfMonth"] = result["Date"].dt.day
+    result["WeekOfYear"] = result["Date"].dt.weekofyear
+    result["DayOfYear"] = result["Date"].dt.dayofyear
+
+    
+    return result
