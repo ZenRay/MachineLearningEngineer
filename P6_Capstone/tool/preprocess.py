@@ -29,6 +29,30 @@ def load_data(path, file_name, dtype:dict =None, converters:dict =None):
 
     return df
 
+def create_dummies(df, dummy_variable, drop_variables=[]):
+    """
+    transform the category varibale by using get_dummy method
+
+    Params:
+        (DataFrame) df - dataframe which need to transform the variable
+        (str) dummy_variable - string that is a category variable need transform
+        (list) drop_variables - variables would be dropped
+    Result:
+        (DataFrame) df - dataframe contains dummy variables
+    """
+    
+    dummies = pd.get_dummies(df[dummy_variable], prefix=dummy_variable)
+    df = df.merge(dummies, on=df.index, validate="1:1")
+
+    # drop duplicate meaning variable
+
+    if "key_0" in df.columns:
+        drop_variables.append("key_0")
+        df.drop(drop_variables, axis=1, inplace=True)
+    else:
+        df.drop(columns=drop_variables, axis=1, inplace=True)
+    
+    return df
 
 def collect_data(train_data, test_data, store_data):
     """
