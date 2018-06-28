@@ -42,9 +42,10 @@ def create_dummies(df, dummy_variable, drop_variables=[]):
     """
     
     dummies = pd.get_dummies(df[dummy_variable], prefix=dummy_variable)
-    df = df.merge(dummies, on=df.index, validate="1:1")
+    df = df.merge(dummies, on=df.index, validate="1:1", how="left")
 
     # drop duplicate meaning variable
+    drop_variables.append(dummy_variable)
 
     if "key_0" in df.columns:
         drop_variables.append("key_0")
@@ -90,27 +91,19 @@ def collect_data(train_data, test_data, store_data):
     
     # dummy variable about the category variable that like storetype, assortment
     # in the store dataset
-    store_data = store_data.merge(pd.get_dummies(store_data["StoreType"], prefix="StoreType"),
-        on=store_data.index, validate="1:1", how="left")
-    store_data.drop(["StoreType", "StoreType_d", "key_0"], axis=1, inplace=True)
+    store_data = create_dummies(store_data, "StoreType", drop_variables=["StoreType_d"])
 
-    store_data = store_data.merge(pd.get_dummies(store_data["Assortment"], prefix="Assortment"),
-        on=store_data.index, validate="1:1")
-    store_data.drop(["Assortment", "Assortment_c", "key_0"], axis=1, inplace=True)
+    store_data = create_dummies(store_data, "Assortment", drop_variables=["Assortment_c"])
 
     # dummy variable about the category variable that like stateholiday in the
     # train dataset andt in the test dataset
     state_holiday = {"a":"Public", "b":"Easter", "c":"Christmas", "0":"No"}
+    train_data["StateHoliday"] = train_data.loc[:, "StateHoliday"].map(state_holiday)
+    test_data["StateHoliday"] = test_data.loc[:, "StateHoliday"].map(state_holiday)
 
-    train_data = train_data.merge(pd.get_dummies(train_data["StateHoliday"].map(state_holiday), 
-        prefix="StateHoliday"), on=train_data.index)
-    train_data.drop(["StateHoliday_No", "StateHoliday", "key_0"], axis=1, 
-        inplace=True)
+    train_data = create_dummies(train_data, "StateHoliday", drop_variables=["StateHoliday_No"])
 
-    test_data = test_data.merge(pd.get_dummies(test_data["StateHoliday"].map(state_holiday), 
-        prefix="StateHoliday"), on=test_data.index)
-    test_data.drop(["StateHoliday", "StateHoliday_No", "key_0"], axis=1,
-        inplace=True)
+    test_data = create_dummies(test_data, "StateHoliday", ["StateHoliday_No"])
 
     # transform the sales and the customers about the train dataset by using log
     train_data["Sales"] = train_data["Sales"].apply(np.log1p)
