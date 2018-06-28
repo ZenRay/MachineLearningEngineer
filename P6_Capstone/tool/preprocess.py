@@ -4,6 +4,7 @@
 import pandas as pd
 import numpy as np
 from zipfile import ZipFile
+from datetime import datetime
 """
 The preprocess module is a tool that collects all the data, preprocesses the 
 data. At the same time, utility the tool creates the features and the target. 
@@ -91,9 +92,9 @@ def collect_data(train_data, test_data, store_data):
     
     # dummy variable about the category variable that like storetype, assortment
     # in the store dataset
-    store_data = create_dummies(store_data, "StoreType", drop_variables=["StoreType_d"])
+    store_data = create_dummies(store_data, "StoreType", ["StoreType_d"])
 
-    store_data = create_dummies(store_data, "Assortment", drop_variables=["Assortment_c"])
+    store_data = create_dummies(store_data, "Assortment", ["Assortment_c"])
 
     # dummy variable about the category variable that like stateholiday in the
     # train dataset andt in the test dataset
@@ -101,7 +102,7 @@ def collect_data(train_data, test_data, store_data):
     train_data["StateHoliday"] = train_data.loc[:, "StateHoliday"].map(state_holiday)
     test_data["StateHoliday"] = test_data.loc[:, "StateHoliday"].map(state_holiday)
 
-    train_data = create_dummies(train_data, "StateHoliday", drop_variables=["StateHoliday_No"])
+    train_data = create_dummies(train_data, "StateHoliday", ["StateHoliday_No"])
 
     test_data = create_dummies(test_data, "StateHoliday", ["StateHoliday_No"])
 
@@ -119,11 +120,29 @@ def collect_data(train_data, test_data, store_data):
     result.drop(["DayOfWeek", "DayOfWeek_7", "key_0"], axis=1, inplace=True)
 
     # parse the date into month, year, dayofmonth, weekofyear, dayofyear
-    result["Year"] = result["Date"].dt.year
-    result["Month"] = result["Date"].dt.month
-    result["DayOfMonth"] = result["Date"].dt.day
-    result["WeekOfYear"] = result["Date"].dt.weekofyear
-    result["DayOfYear"] = result["Date"].dt.dayofyear
-
+    result["OpenYear"] = result["Date"].dt.year
+    result["OpenMonth"] = result["Date"].dt.month
+    result["OpenDayOfMonth"] = result["Date"].dt.day
+    result["OpenWeekOfYear"] = result["Date"].dt.weekofyear
+    result["OpenDayOfYear"] = result["Date"].dt.dayofyear
     
+    # imitate the data that promo2 started by using year and week
+    promo2date = []
+    
+    for year, week in zip(result["Promo2SinceYear"], result["Promo2SinceWeek"]):
+        if ((not np.isnan(year)) & (not np.isnan(week))):
+            promo2date.append(datetime.strptime("{0:04} {1:02} 1".format(
+                int(year), int(week)), "%G %V %u"))
+        else:
+            promo2date.append(np.nan)
+    
+    # parse the information about the promo2 by comparing the date with 
+    # promo2startdate
+    result["InPromo2"] = ((result["Date"] >= pd.Series(promo2date)) & 
+        (result["Promo2"].apply(lambda x: True if x==1 else False))).apply(
+            lambda x: 1 if x else 0)
+    
+    # caculate months since the competition opened
+    result["CompetitionOpenMonths"] = result["OpenMonth"] + (result["OpenYear"] - 
+        result["CompetitionOpenSinceYear"]) * 12 - result["CompetitionOpenSinceMonth"] 
     return result
