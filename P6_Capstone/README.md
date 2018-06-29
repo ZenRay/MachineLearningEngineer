@@ -26,9 +26,17 @@ Rossmann是欧洲的一家连锁药店。 在这个源自Kaggle比赛[Rossmann S
 
 
 ### 提交
-* PDF 报告文件（注意这不应该是notebook的导出，请按照[模板](https://github.com/nd009/machine-learning/blob/zh-cn/projects/capstone/capstone_report_template.md)填写）
-* 项目相关代码
-* 包含使用的库，机器硬件，机器操作系统，训练时间等数据的 README 文档
+1. PDF 报告文件（注意这不应该是notebook的导出，请按照[模板](https://github.com/nd009/machine-learning/blob/zh-cn/projects/capstone/capstone_report_template.md)填写）
+
+2. 项目相关代码
+
+   | 文件夹名称 |    文件名     |    文件说明    |
+   | :--------: | :-----------: | :------------: |
+   |   `tool`   | preprocess.py | 数据预处理代码 |
+
+   
+
+3. 包含使用的库，机器硬件，机器操作系统，训练时间等数据的 README 文档
 
 
 ### 参考
