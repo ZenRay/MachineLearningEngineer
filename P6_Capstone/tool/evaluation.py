@@ -29,4 +29,16 @@ def rmspe(y_true, y_predict):
 
     score = np.sqrt(np.power(percent, 2).sum() * 1/n)
     
-    return "The rmspe score is %.4f .\n" % score
+    return score
+
+def rmspe_xgb(y_true, y_predict):
+    """
+    the function is used in the xgboost evaluation
+    Param:
+        (sequence) y_true - true labels
+        (sequence) y_predict - predict labels
+    Result:
+        (float) result - evaluation socre
+    """
+    score = rmspe(y_true, np.array(y_predict.get_label()))
+    return "RMSPE", score
