@@ -137,10 +137,27 @@ def collect_data(train_data, test_data, store_data):
             promo2date.append(np.nan)
     
     # parse the information about the promo2 by comparing the date with 
-    # promo2startdate
+    # promo2startdate, firstly
     result["InPromo2"] = ((result["Date"] >= pd.Series(promo2date)) & 
         (result["Promo2"].apply(lambda x: True if x==1 else False))).apply(
             lambda x: 1 if x else 0)
+    
+    # parse information whether the open date is in promointerval
+    promointerval = []
+    for month, promomonth in zip(result["Date"].apply(datetime.strftime, args=("%b",)), 
+                            result["PromoInterval"].str.split(",")):
+
+        try:
+            if month in promomonth:
+                promointerval.append(True)
+            else:
+                promointerval.append(False)
+        except TypeError:
+            promointerval.append(False)
+    
+    # analysis the information between open date and the promointeral
+    result["InPromo2"] = ((result["InPromo2"] == 1) & pd.Series(promointerval)
+                            ).apply(lambda x: 1 if x else 0)
     
     # caculate months since the competition opened
     result["CompetitionOpenMonths"] = result["OpenMonth"] + (result["OpenYear"] - 
