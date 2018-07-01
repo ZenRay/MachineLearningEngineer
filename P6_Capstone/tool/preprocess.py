@@ -120,11 +120,11 @@ def collect_data(train_data, test_data, store_data):
     result.drop(["DayOfWeek", "DayOfWeek_7", "key_0"], axis=1, inplace=True)
 
     # parse the date into month, year, dayofmonth, weekofyear, dayofyear
-    result["OpenYear"] = result["Date"].dt.year
-    result["OpenMonth"] = result["Date"].dt.month
-    result["OpenDayOfMonth"] = result["Date"].dt.day
-    result["OpenWeekOfYear"] = result["Date"].dt.weekofyear
-    result["OpenDayOfYear"] = result["Date"].dt.dayofyear
+    result["OpenYear"] = result["Date"].dt.year.astype("uint16")
+    result["OpenMonth"] = result["Date"].dt.month.astype("uint16")
+    result["OpenDayOfMonth"] = result["Date"].dt.day.astype("uint16")
+    result["OpenWeekOfYear"] = result["Date"].dt.weekofyear.astype("uint16")
+    result["OpenDayOfYear"] = result["Date"].dt.dayofyear.astype("uint16")
     
     # imitate the data that promo2 started by using year and week
     promo2date = []
@@ -157,9 +157,13 @@ def collect_data(train_data, test_data, store_data):
     
     # analysis the information between open date and the promointeral
     result["InPromo2"] = ((result["InPromo2"] == 1) & pd.Series(promointerval)
-                            ).apply(lambda x: 1 if x else 0)
+                            ).apply(lambda x: 1 if x else 0).astype("uint8")
     
     # caculate months since the competition opened
     result["CompetitionOpenMonths"] = result["OpenMonth"] + (result["OpenYear"] - 
-        result["CompetitionOpenSinceYear"]) * 12 - result["CompetitionOpenSinceMonth"] 
+        result["CompetitionOpenSinceYear"]) * 12 - result["CompetitionOpenSinceMonth"]
+
+    # convert datatype for save storage
+    result["Store"] = result["Store"].astype("uint16")
+    result["Open"] = result["Open"].astype("uint16")
     return result
