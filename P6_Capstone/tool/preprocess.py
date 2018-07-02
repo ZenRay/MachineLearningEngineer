@@ -117,7 +117,7 @@ def collect_data(train_data, test_data, store_data):
     # dummy variable about the dayofweek in the dataset
     result = result.merge(pd.get_dummies(result["DayOfWeek"], prefix="DayOfWeek"),
         on=result.index)
-    result.drop(["DayOfWeek", "DayOfWeek_7", "key_0"], axis=1, inplace=True)
+    result.drop(["DayOfWeek_7", "key_0"], axis=1, inplace=True)
 
     # parse the date into month, year, dayofmonth, weekofyear, dayofyear
     result["OpenYear"] = result["Date"].dt.year.astype("uint16")
@@ -167,3 +167,75 @@ def collect_data(train_data, test_data, store_data):
     result["Store"] = result["Store"].astype("uint16")
     result["Open"] = result["Open"].astype("uint16")
     return result
+
+def extend_features(data):
+    """
+    Create the new features which will be used to create the model, and create 
+    the new information data
+
+    Params:
+        (DataFrame) data - get the dataframe from the collect data
+    Result:
+        (DataFrame) result - dataframe store the data information
+        (list) features - store the features that will bu used to create the model
+    """
+
+    # initial the featues
+    features = []
+
+    # calculate the store information that is parsed from the sales feature and 
+    # the customers feature
+    features.extend(["AvgSales", "AvgCustomers", "AvgSalesPerCustomers", 
+        "MedianCustomers"])
+
+    # grouby the store to calculate    
+    train_data = data[data["Tag"]=="train"].copy()
+
+    data = data.merge((train_data.groupby("Store")["Sales"].sum() 
+        / train_data.groupby("Store")["Open"].count()).reset_index(name="AvgSales"),
+        how="left", on="Store", validate="m:1")
+
+    data = data.merge((train_data.groupby("Store")["Customers"].sum()
+        / train_data.groupby("Store")["Open"].count()).reset_index(name="AvgCustomers"), 
+        how="left", on="Store", validate="m:1")
+
+    data["AvgSalesPerCustomers"] = data["AvgSales"] / data["AvgCustomers"]
+
+    data = data.merge(train_data.groupby("Store")["Customers"].median().reset_index(name="MedianCustomers"), 
+        on="Store", how="left", validate="m:1")
+
+    # calculate the number of the schoolholiday in this week, lastweek and next
+    # week
+    features.extend(["HolidayThisWeek", "HolidayNextWeek", "HolidayLastWeek"])
+
+    school_holiday_counts = data.groupby(["Store", "OpenYear", "OpenWeekOfYear"]) \
+        ["SchoolHoliday"].sum().reset_index(name="HolidayThisWeek")
+    
+    school_holiday_counts["HolidayNextWeek"] = \
+        school_holiday_counts["HolidayThisWeek"].shift(-1)
+    school_holiday_counts["HolidayLastWeek"] = \
+        school_holiday_counts["HolidayThisWeek"].shift()
+    # fill the missing values
+    school_holiday_counts.fillna(0)
+    data = data.merge(school_holiday_counts, on=["Store", "OpenYear", 
+    "OpenWeekOfYear"], how="left", validate="m:1")
+
+    # calculate mean, median information about the sales and the customers in 
+    # each every week day
+    features.extend(["AvgSalesInDayOfWeek", "MedianSalesInDayOfWeek", 
+        "AvgCustsInDayOfWeek", "MedianCustsInDayOfWeek"])
+
+    train_group = train_data.groupby(["Store", "DayOfWeek"])
+    data = data.merge(train_group["Sales"].mean().reset_index(name="AvgSalesInDayOfWeek"), 
+        how="left", on=["Store", "DayOfWeek"], validate="m:1")
+
+    data = data.merge(train_group["Sales"]. median().reset_index(name="MedianSalesInDayOfWeek"), 
+        how="left", on=["Store", "DayOfWeek"], validate="m:1")
+
+    data = data.merge(train_group["Customers"].mean().reset_index(name="AvgCustsInDayOfWeek"),
+        how="left", on=["Store", "DayOfWeek"], validate="m:1")
+
+    data = data.merge(train_group["Customers"].median().reset_index(name="MedianCustsInDayOfWekk"),
+        how="left", on=["Store", "DayOfWeek"], validate="m:1")
+
+    return data, features
