@@ -11,6 +11,23 @@ from sklearn import metrics
 from sklearn.model_selection import cross_validate, GridSearchCV
 
 
+def dmatrix(data, features, **kwargs):
+    """
+    Create the DMatrix which is the xgboost datatype
+
+    Params:
+        (DataFrame) data - need to be transformed to the DMatrix datatype
+        (list | string) features - need to be kept in the DMatrix data
+
+    Result:
+        (DMatrix) result - DMatrix data contains features
+    """
+    # extract the data with features
+    sample_data = data.copy().loc[:, features]
+    result = xgb.DMatrix(sample_data, **kwargs)
+
+    return result
+
 def xgb_dmatrix(data, features, label, **kwargs):
     """
     Create the new data that can be used in the xgboost model, which need DMatrix
