@@ -77,7 +77,9 @@ def collect_data(train_data, test_data, store_data, duplicate_features=[]):
     test_data["Open"].fillna(1, inplace=True)
 
     # drop the dupilcate feature in the test dataset
-    test_data.drop("Id", axis=1, inplace=True)
+    # test_data.drop("Id", axis=1, inplace=True)
+    # keep the Id feature
+    train_data["Id"] = np.nan
 
     # drop the sales 0 with the open 0 in the train dataset
     train_data = train_data.loc[((train_data["Sales"] !=0) & (train_data["Open"]!=0))]
@@ -110,8 +112,11 @@ def collect_data(train_data, test_data, store_data, duplicate_features=[]):
     test_data = create_dummies(test_data, "StateHoliday", ["StateHoliday_No"])
 
     # transform the sales and the customers about the train dataset by using log
-    train_data["Sales"] = train_data["Sales"].apply(np.log1p)
-    train_data["Customers"] = train_data["Customers"].apply(np.log1p)
+    train_data["SalesByLog"] = train_data["Sales"].apply(np.log1p)
+    train_data["CustomersByLog"] = train_data["Customers"].apply(np.log1p)
+
+    test_data.loc[:, "SalesByLog"] = np.nan
+    test_data.loc[:, "CustomersByLog"] = np.nan
 
     # merge the train dataset, the test dataset and the test dataset into the result
     result = pd.concat([train_data, test_data], ignore_index=True, sort=False)
