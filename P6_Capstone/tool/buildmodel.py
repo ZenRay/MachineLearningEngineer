@@ -63,3 +63,28 @@ def xgb_naive_model(params, dtrain, num_boost_round, early_stopping_rounds, eval
         evals=evals, **kwargs)
 
     return model
+
+def down_model(model, features, feat_name, model_name, report_name=None,
+                report_option=False):
+    """
+    After the model trianed by features. Save the features into a file, and 
+    save the model into a file
+    
+    Params:
+        (Booster) model - model is trained 
+        (list) features - list or array is used to train model
+        (string) feat_name - a file with path stores the features
+        (string) model_name - a file stores the model
+    """
+
+    # create the features map
+    with open(feat_name, "w") as file:
+        for index, feature in enumerate(features):
+            file.write("i\t{0}\t{1}\tq\n".format(index, feature))
+
+    # save the model
+    model.save_model(model_name)
+
+    # save the model report
+    if report_option:
+        model.dump_model(report_name, fmap=feat_name, with_stats=True)
