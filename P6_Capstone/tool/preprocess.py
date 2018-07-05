@@ -79,7 +79,7 @@ def collect_data(train_data, test_data, store_data, duplicate_features=[]):
     # drop the dupilcate feature in the test dataset
     # test_data.drop("Id", axis=1, inplace=True)
     # keep the Id feature
-    train_data["Id"] = np.nan
+    train_data["Id"] = 0
 
     # drop the sales 0 with the open 0 in the train dataset
     train_data = train_data.loc[((train_data["Sales"] !=0) & (train_data["Open"]!=0))]
@@ -176,6 +176,7 @@ def collect_data(train_data, test_data, store_data, duplicate_features=[]):
     # convert datatype for save storage
     result["Store"] = result["Store"].astype("uint16")
     result["Open"] = result["Open"].astype("uint16")
+    result["Id"] = result["Id"].astype("int32")
     return result, duplicate_features
 
 def extend_features(data):
