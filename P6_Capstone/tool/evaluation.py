@@ -3,6 +3,7 @@
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 """
 the evaluation module contains evaluation functions that like loss function and
@@ -68,3 +69,57 @@ def get_result(y_predict, data, path, file_name):
     # export the data into csv file
     data[["Id", "Sales"]].to_csv(path + file_name, index=False)
     return data
+
+def vis_features_score(model, color_option=True, feature_sort_option=True, **kwargs):
+    """
+    visualize the features score
+
+    Params:
+        (Booster) model - XGBoost model
+        (bool) color_option - if true, split the feature according by quantile
+        (bool) feature_sort_option - if true, sort the feature by the score
+
+        kwargs - other arguments is used to plot figure
+                color_up - matplotlib color, if score is greater than a value, 
+                            use the color_up
+                color_down - matplotlib color, otherwise, use the color_down
+                color_mid - matplotlib color
+                percent_up - float value in [0, 1]. choose the high percent value, 
+                        so that the base value choose the color_up or color_down
+                percent_down - float value in [0, 1]. choose the low percent value, 
+                        so that the base value choose the color
+                figsize - tuple, choose the figure size
+    """
+    # create the feature series
+    features_map = pd.Series(model.get_fscore()).sort_values(ascending=
+        feature_sort_option)
+
+    # create the color sequence that is used to color bar
+    def color_map(x):
+        base_value_up = features_map.quantile(q=kwargs["percent_up"])
+        base_value_down = features_map.quantile(q=kwargs["percent_down"])
+
+        if x >= base_value_up:
+            return kwargs["color_up"]
+        elif x >= base_value_down:
+            return kwargs["color_mid"]
+        else:
+            return kwargs["color_down"]
+
+    if color_option:
+        color_seq = features_map.apply(color_map)
+    else:
+        color_seq = None
+    
+    # bar plot about  the features
+    ax = features_map.plot(kind="barh", figsize=kwargs["figsize"], color=color_seq)
+    plt.title("Feature Importance", fontsize=12)
+    plt.ylabel("Feature", fontsize=12)
+
+    # adjust the bar color
+    for text, color_name in zip(ax.axes.get_yticklabels(), color_seq):
+        text.set_color(color_name)
+        text.set_fontsize(10)
+
+    plt.show()
+    return ax
