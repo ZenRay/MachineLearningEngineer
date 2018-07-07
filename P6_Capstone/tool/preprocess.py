@@ -231,6 +231,30 @@ def extend_features(data):
     data = data.merge(school_holiday_counts, on=["Store", "OpenYear",
     "OpenWeekOfYear"], how="left", validate="m:1")
 
+    # calculate the number of the state holiday in this month, last month and
+    # next month according by the store in each month
+    new_features.extend(["StateHolidayThisMonth", "StateHolidayLastMonth",
+        "StateHolidayNextMonth"])
+    
+    data["TemSH"] = data["StateHoliday"].apply(lambda x: 0 if x=="No" else 1)
+    state_holiday_count = data.groupby(["Store", "OpenYear", "OpenMonth"]) \
+        ["TemSH"].sum().reset_index(name="StateHolidayThisMonth")
+
+    state_holiday_count["StateHolidayNextMonth"] = \
+        state_holiday_count["StateHolidayThisMonth"].shift(-1)
+    state_holiday_count["StateHolidayLastMonth"] = \
+        state_holiday_count["StateHolidayThisMonth"].shift()
+    
+    # fill the missing values
+    state_holiday_count.fillna(0)
+
+    # drop the temsh column
+    data.drop("TemSH", axis=1, inplace=True)
+
+    # merge the data
+    data = data.merge(state_holiday_count, on=["Store", "OpenYear", "OpenMonth"],
+        how="left", validate="m:1")
+
     # calculate mean, median information about the sales and the customers in
     # each every week day
     new_features.extend(["AvgSalesInDayOfWeek", "MedianSalesInDayOfWeek",
@@ -249,12 +273,25 @@ def extend_features(data):
     data = data.merge(train_group["Customers"].median().reset_index(name="MedianCustsInDayOfWeek"),
         how="left", on=["Store", "DayOfWeek"], validate="m:1")
 
-    data[["AvgSales", "AvgCustomers", "AvgSalesPerCustomers", "MedianCustomers",
-    "HolidayThisWeek", "HolidayNextWeek", "HolidayLastWeek", "AvgSalesInDayOfWeek",
-    "MedianSalesInDayOfWeek", "AvgCustsInDayOfWeek", "MedianCustsInDayOfWeek"]] = \
-    	data[["AvgSales", "AvgCustomers", "AvgSalesPerCustomers", "MedianCustomers",
-    	"HolidayThisWeek", "HolidayNextWeek", "HolidayLastWeek", "AvgSalesInDayOfWeek",
-    	"MedianSalesInDayOfWeek", "AvgCustsInDayOfWeek", "MedianCustsInDayOfWeek"]]. \
-    	astype("float16")
+    # calculate mean, median information about the sales and the customer in
+    # each month
+    new_features.extend(["AvgSalesInOpenMonth", "MedianSalesInOpenMonth",
+        "AvgCustsInOpenMonth", "MedianCustsInOpenMonth"])
+    train_group = train_data.groupby(["Store", "OpenYear", "OpenMonth"])
+
+    data = data.merge(train_group["Sales"].mean().reset_index(name="AvgSalesInOpenMonth"),
+        how="left", on=["Store", "OpenYear", "OpenMonth"], validate="m:1")
+
+    data = data.merge(train_group["Sales"].median().reset_index(name="MedianSalesInOpenMonth"),
+        how="left", on=["Store", "OpenYear", "OpenMonth"], validate="m:1")
+
+    data = data.merge(train_group["Customers"].mean().reset_index(name="AvgCustsInOpenMonth"),
+        how="left", on=["Store", "OpenYear", "OpenMonth"], validate="m:1")
+
+    data = data.merge(train_group["Customers"].median().reset_index(name="MedianCustsInOpenMonth"),
+        how="left", on=["Store", "OpenYear", "OpenMonth"], validate="m:1")
+
+    # convert the data type
+    data[new_features] = data[new_features].astype("float16")
 
     return data, new_features
