@@ -9,6 +9,7 @@ import numpy as np
 import xgboost as xgb
 from sklearn import metrics
 from sklearn.model_selection import cross_validate, GridSearchCV
+from evaluation import rmspe, rmspe_xgb
 
 
 def dmatrix(data, features, **kwargs):
@@ -88,3 +89,59 @@ def down_model(model, features, feat_name, model_name, report_name=None,
     # save the model report
     if report_option:
         model.dump_model(report_name, fmap=feat_name, with_stats=True)
+
+def feature_select(feature, params, Xtrain, Xval, yval, cur_features, 
+                    report_option=1, **kwargs):
+    """
+    Make sure that the appropriate feature to build the model, if the rmspe score
+    is better
+
+    Params:
+        (list) feature - list with one feature name
+        (dict) params - paramters for booster
+        (DataFrame) Xtrain - dataframe of train data for training model
+        (DataFrame) Xval - dataframe of  validate data for evaluation
+        (Series) yval - series or sequence contains the true value about 
+                            validate data
+        (list) cur_features - current features that is determined
+        (int) report_option - a integer number determines that report information
+                            in the total turns
+            kwargs - option parameters
+                    num_boost_round - training model paramter, num_boost_round
+                    early_stopping_round - training model paramter, early_stopping_round
+    Result:
+        (list) feature - feature
+        (float) score - score about validate data
+        (booster) model - trained model
+    """
+    if len(feature) != 0:
+        print("Add the feature %s .\n" % feature[0])
+        verbose_eval = False
+    else:
+        # set the verbose_eval is false, so that print the hint, when no feature
+        verbose_eval = kwargs["num_boost_round"] / report_option
+    
+    # convert dataframe to dmatrix
+    dtrain = dmatrix(Xtrain, cur_features+feature,label=Xtrain["SalesByLog"],
+                    missing=np.nan)
+                    
+    dvalidate = dmatrix(Xval, cur_features+feature, label=Xval["SalesByLog"],
+                    missing=np.nan)
+
+    yval.fillna(0)
+    # train model
+    evallist = [(dvalidate, "eval"), (dtrain, "train")]
+    model = xgb_naive_model(params, dtrain, evals=evallist, feval=rmspe_xgb, 
+                verbose_eval=verbose_eval, **kwargs)
+
+    # print the training report
+    print("At best iteration is %d, the score is %f. The message is:\n" % 
+        (model.best_iteration, model.best_score))
+    print(model.attributes()["best_msg"])
+
+    # validate the model
+    predict_value = model.predict(dvalidate)
+    score = rmspe(yval, predict_value)
+    print("The validate RMSPE score is %f" % score)
+
+    return feature, score, model
