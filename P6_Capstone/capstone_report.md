@@ -394,7 +394,7 @@ params = {"objective": "reg:linear",
 
 | Private Score | Public Score |
 | ------------- | ------------ |
-| 0.11824       | 0.10375      |
+| 0.11724       | 0.10375      |
 
 ## $\rm IV.$ 结果
 
@@ -406,16 +406,57 @@ params = {"objective": "reg:linear",
 
 ### 4.2 合理性分析
 
-从最初建立的模型到最终确立的模型来看，两次的 `RMSPE` 得分值都偏小，也就是满足了项目在设定之初对稳健性的要求。虽然没有达到最初在基准模型上要求的 `0.11773`，但是最终得 Private Score 是 `0.11824` ，这已经非常接近最终的要求了。
+从最初建立的模型到最终确立的模型来看，两次的 `RMSPE` 得分值都偏小，也就是满足了项目在设定之初对稳健性的要求。虽然没有达到最初在基准模型上要求的 `0.11773`，但是最终得 Private Score 是 `0.11724` ，这已经达到了最终的要求了。
 
 ## $\rm V.$ 项目结论
 
+### 5.1 结果可视化
 
+对结果可视化的展示，使用的数据为验证数据集。展示的结果主要从几个方面来阐释：1）每家商店实际销售额和预测销售额的差异百分比的平均值和标准差；2）从日期的角度来分析每家商店的实际销售额和预测销售额的差异百分比的平均值和标准差
 
-## 参考
+首先对每家商店的实际销售和预测销售额的差异百分比进行分析：
+
+![percentage_sales_difference_store](img/percentage_sales_difference_store.png)
+
+接下来是对不同营业日期中实际销售额和预测销售额的差异百分比进行分析：
+
+![percentage_sales_difference_date](img/percentage_sales_difference_date.png)
+
+从以上的结果来看，如果对商店整体的预测值和实际值之间差异进行分析，对于某些商店的预测稳定性和预测的效果还是比较高的，但是在某些商店上面还是缺乏稳定性。从日期的角度来分析商店的预测值和实际值之间差异，日期角度的波动性要小一些，但是波动范围却要更大很多。整体的分析不论是稳定性还是预测的效果，从整体的日期来来看都是比较差一些的。
+
+在以上的商店的差异值中，存在最大差异值。为了深入的了解对连续六周的预测稳定性，以及最大差异值具体的分布情况。从数据中确认了差异值的均值和标准差最大的商店，是 329 和 570。因此对这两家商店的最后三个月实际销售额和预测销售额的差异。
+
+下图为 329 号商店的销售额比较：
+
+![sales_predict_store329](img/sales_predict_store329.png)
+
+下图是 570 号商店的销售额比较：
+
+![sales_predict_store570](img/sales_predict_store570.png)
+
+从上面的结果可以看出整体的预测上，准确性以及稳定性都是比较高的，也就是说模型基本上满足了稳定性的要求。
+
+### 5.2 对项目的思考
+
+本次机器学习的项目流程，基本上都是依据了一般流程：
+
+![process](img/process.png)
+
+在整个过程中，因必要的数据探索和数据清理花费了部分时间，特别是数据探索中进行了不同角度的分析方式，发现了一些对商店类型和经营类型差异的影响。另外就是对于特征的构建和选择过程花费了大量时间，借鉴了已有的经验建立了一些特征，同时建立了新的特征。最后耗费大量时间是进行参数调整，因为在本地进行同时仪器限制耗费了很多时间。
+
+项目过程中遇到的困难还是多方面，一是对 `XGBoost` 的模型理解，它是整个项目基础从理解它的算法到参数选项都进行不断地尝试和学习。对数据的理解是一个方面，特别是在特征选择过程中参考了特征重要得分、特征相关性，但是两者之间没有融汇贯通还是难以进行深度分析。另外就是最终主要还是依赖于参数调整，来达到最终的项目要求。
+
+从项目的结果来看，虽然达到了项目要求，但是在细节问题上尚未有明确的了解，例如融合问题——没有想到一个好的方式来解决融合。但是在解决时间序列的回归问题上还是有一定的通用性，从数据的处理到模型构建过程都有可取之处。
+
+### 5.3 需要做出的改进
+
+首先来说，该结果并没有发挥出融合模型的优势，在结果上太依赖于调试参数来得到结果。另外整个项目耗时太长，但是缺乏其他方式或者算法的尝试，为了平均最终的效果应该从更多的角度来考虑或者说尝试，这就包括 `CART` 算法没有进行尝试。以目前的状态来考虑，可以有话的方面是特征选择——项目中尚未发掘出特征选择的优势；此外还有就是尝试使用其他技术，例如深度学习，以神经网络的方式来构建模型。
+
+## $\rm VI.$参考
 
 1. [Gradient boosting](https://en.wikipedia.org/wiki/Gradient_boosting)
 2. [Introduction to Boosted Trees ](https://xgboost.readthedocs.io/en/latest/tutorials/model.html)
 3. [Python API Reference](https://xgboost.readthedocs.io/en/latest/python/python_api.html)
 4. [机器学习系列(12)_XGBoost参数调优完全指南（附Python代码）](https://blog.csdn.net/han_xiaoyang/article/details/52665396)
->>>>>>> report
+5. [A Journey through Rossmann Stores.](https://www.kaggleusercontent.com/kf/106951/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..Waj-Z1GxxIgh23xsbs4Ngg.f9nJJwNdjWqHqoz5u864wMEFCjrp273ZBgf-Xranw1DHHK--MnhX4RV661nPEOBR9zdTjhMN4SiFJ7DevEmFq31QxKl7l-xOdYw-aDiM7MGjwocGMKsc1G8dMnUxw6BEuH19F-L22iBnEPC8zmo485Uxz1eeRMogdY8AjO58qhs.h6ejXSs2vKEPhxgtivBn9A/output.html)
+6. [Rossmann Exploratory Analysis.](https://www.kaggleusercontent.com/kf/124149/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.._fhhtixYhS4PxlWDXvVKfQ.sIgrnBLygm4AHX58Kw-2zBIdDTvbSS8YleTFWFSOXDV7_FnARDpIhGMax9TeFadYq-W9InNhlYV94S5SzIkV7NiQR_hA6aaJk7WOGqcbdU3Ng4tXxnzC_g4a4pyHPd5Z69zLBtOmiInL6DREtH7X6Q.aU-WTP6xkcqTsmJ8vIk4dA/output.html)
