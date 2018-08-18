@@ -34,16 +34,19 @@ Rossmann是欧洲的一家连锁药店。 在这个源自Kaggle比赛[Rossmann S
    | :--------: | :-----------: | :--------------------: |
    |   `tool`   | preprocess.py |     数据预处理代码     |
    |   `tool`   | evaluation.py | 用于评估模型的指标代码 |
+   |    tool    | buildmodel.py | 用于构建模型的相关代码 |
 
    
 
 3. 包含使用的库，机器硬件，机器操作系统，训练时间等数据的 README 文档
+
+   * 库	本次项目中使用的库包括 `pandas`, `numpy`, `zipfile`, `datetime`, `matplotlib`, `seaborn`, `pickle`, `os`, `sklearn` 以及 `xgboost`
+   * 机器硬件       本次项目是本地运行的，使用的是 CPU 为 `i3-2370M`，内存为 4 G，AMD 显卡，Windows 10 操作系统
+   * 训练时间        在最终模型筛选完之后，进行测试训练时间。最终大约为 3 小时
 
 
 ### 参考
 比赛第一名的[采访](http://blog.kaggle.com/2015/12/21/rossmann-store-sales-winners-interview-1st-place-gert/)及[参考资料](https://www.kaggle.com/c/rossmann-store-sales/forums/t/18024/model-documentation-1st-place)。
 
 
-### 反思
-1. 目前来看到的主要问题，还是缺少一个可执行的思路。需要查询和增加更多的资料。
-2. 对数据异常判断，需要多加根据实际情况进行分析——例如：没有营业且没有营业额的数据点是否需要处理
+
