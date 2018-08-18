@@ -41,8 +41,14 @@ Rossmann是欧洲的一家连锁药店。 在这个源自Kaggle比赛[Rossmann S
 3. 包含使用的库，机器硬件，机器操作系统，训练时间等数据的 README 文档
 
    * 库	本次项目中使用的库包括 `pandas`, `numpy`, `zipfile`, `datetime`, `matplotlib`, `seaborn`, `pickle`, `os`, `sklearn` 以及 `xgboost`
+
    * 机器硬件       本次项目是本地运行的，使用的是 CPU 为 `i3-2370M`，内存为 4 G，AMD 显卡，Windows 10 操作系统
-   * 训练时间        在最终模型筛选完之后，进行测试训练时间。最终大约为 3 小时
+
+   * 训练时间        在最终模型筛选完之后，进行测试训练时间。最终大约为 2小时
+
+   * 最终评分
+
+     ![image-20180818172052520](img/score.png)
 
 
 ### 参考
