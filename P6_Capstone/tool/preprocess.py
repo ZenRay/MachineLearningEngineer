@@ -104,8 +104,10 @@ def collect_data(train_data, test_data, store_data, duplicate_features=[]):
     # train dataset andt in the test dataset
     duplicate_features.extend(["StateHoliday"])
     state_holiday = {"a":"Public", "b":"Easter", "c":"Christmas", "0":"No"}
-    train_data["StateHoliday"] = train_data.loc[:, "StateHoliday"].map(state_holiday)
-    test_data["StateHoliday"] = test_data.loc[:, "StateHoliday"].map(state_holiday)
+    train_data.replace({"StateHoliday":state_holiday}, inplace=True)
+    test_data.replace({"StateHoliday":state_holiday}, inplace=True)
+    # train_data["StateHoliday"] = train_data.loc[:, "StateHoliday"].map(state_holiday)
+    # test_data["StateHoliday"] = test_data.loc[:, "StateHoliday"].map(state_holiday)
 
     train_data = create_dummies(train_data, "StateHoliday", ["StateHoliday_No"])
 
