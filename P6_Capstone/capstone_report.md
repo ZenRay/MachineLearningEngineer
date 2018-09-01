@@ -19,17 +19,19 @@
 
 `Rossmann` 是经营了超过 `3,000` 家遍布欧洲 `7` 个国家的公司。现在 `Rossmann` 经营者希望能够预测六周的每日销售情况，而它的销售情况收到多个因素影响，例如：促销、竞争对手、学校和国家节假日、季节性因素以及本地化等因素等的影响。因为根据每家店的管理者根据当地的实际情况进行了销售预测，预测结果的准确度差异太大。
 
-本次项目，`Rossmann` 的管理者希望能够通过提高预测的准确性来帮助他们更有效的做出工作计划，以及同时达到提高效率和机动性。对此，提出了需要增强预测的 **稳定性**，也就是说需要对经营额进行预测，这是一个连续性数据；`data` 是具有 `label` 的数据。从对数据初步探索可以，该数据集包括了 2013 年 1 月 1 日至 2015 年 7 月 31 日共计大约两年半的数据集，从下图可知：
+本次项目，`Rossmann` 的管理者希望能够通过提高预测的准确性来帮助他们更有效的做出工作计划，以及同时达到提高效率和机动性。该项目需要解决的问题是 **营业额预测问题**，同时需要保障增强预测的 **稳定性**。从对数据初步探索可以，该数据集包括了 2013 年 1 月 1 日至 2015 年 7 月 31 日共计大约两年半的数据集，从下图可知：
 
 ![](img/moving_average_by_date.png)
 
 ### 1.2 问题陈述
 
-本项目中提供的训练数据集由 `train.csv` 提供销售数据信息，`store.csv` 提供营业的商店信息（其中营业时期范围为 2013 年 1 月 1 日至 2015 年 7 月 31 日）。首先需要将两个数据文件进行整合为一个训练数据集。经验证，该数据集是一个具有 17 个 `features` 和 1 个 `label`，而且该 `label` 是一个连续型数据。那么也就证实了，在本项目中需要通过监督式学习来完成对项目分析。
+本项目中提供的训练数据集由 `train.csv` 提供销售数据信息，`store.csv` 提供营业的商店信息（其中营业时期范围为 2013 年 1 月 1 日至 2015 年 7 月 31 日）。首先需要将两个数据文件进行整合为一个训练数据集。经验证，该数据集是一个具有 17 个 `features` 和 1 个 `label`，而且该 `label` 是一个连续型数据。那么也就证实了，在本项目中需要通过 **监督式学习** 来完成对项目分析。
 
 其次，在完成数据的基本探索分析后，需要对数据的某些 `feature` 的数据进行重新构建以及筛选。因为在本数据集的 `features` 大部分都是类别型数据，一方面需要将相关数据进行转换，用以表达相关信息；另一方面，初步探索中已经知道该数据是同时是一个时间序列类型数据，对这类数据在进行数据信息转换的同时需要考虑到时间分析的连续性，可能随机性不适用于该数据类型。
 
 最终的数据结果是能够获得稳定性高的预测测试数据的结果。另一方面，考虑到实际应用层面，希望最终的模型是可以被实际应用到现实中的场景中。例如，将该模型用到 `Rossmann` 的商店营业额预测，以帮助它们建立有效的工作计划，提到工作生产效率和机动性。
+
+综合以上分析以及前人对该问题的分析，本次项目将采用 `XGBoost` 来建模解决 **营业额预测的回归** 分析。
 
 ### 1.3 评价指标
 
@@ -88,8 +90,6 @@
 1. 在对数据分析之前，需要将所有需要的数据 `store` 和 `train` 进行整合为一个 `data` 数据集。首先对 `Sales` 和 `Customers` 数据进行异常值分析，从 `Boxplot` 可以看出这两个 `features` 中存在极端值，根据情况需要删除极大值点。
 
     ![](./img/boxplot_sales_customers.png)
-
-    
 
 2. 对 `Sales` 和 `Open` 数据进行探索，发现存在没有营业且销售额为 0 的数据点，有 17287 个数据点占总数居点大约 `10%` 的数据。这样的数据对后期模型建立过程中，可能导致过高偏差。因此对这类数据进行删除。
 
@@ -294,7 +294,9 @@ Kurtosis:            19.855         Condition No.:        1
 
 4. 更新最终的模型：$F_{m}(x)=F_{m-1}(x)+\gamma_mh_m(x)$
 
-模型构建方面，根据 `Kaggle` 目前已有的探索结果来看， `XGBoost` 取得了非常优秀的结果。本次模型中将使用 `XGBoost` ，它可以用于回归问题和分类问题，原理是依据通过将多个弱分类器组合，同时结合了梯度下降的算法来最小化损失以提高准确率。而且它具有计算速度快，模型表现好的特点——这在目前的 `kaggle` 竞赛结果中已有体现。在构建目标函数中，引入了惩罚项$\Omega$ 来度量模型复杂度，最终的目标函数等式是 $Obj(\Theta)=L(\Theta)+\Omega(\Theta)$。模型最终通过损失函数和惩罚项来平衡偏差和方法，以此建立一个稳定良好的模型。`XGBoost` ，它也是依赖于**决策树融合**，因此在调试参数的时候需要从树深度、学习率等角度进行调试参数$^{[3]}$。
+模型构建方面，根据 `Kaggle` 目前已有的探索结果来看， `XGBoost` 取得了非常优秀的结果。本次模型中将使用 `XGBoost` ，它可以用于回归问题和分类问题，原理是依据通过将多个弱分类器组合，同时结合了梯度下降的算法来最小化损失以提高准确率。而且它具有计算速度快，模型表现好的特点——这在目前的 `kaggle` 竞赛结果中已有体现。在构建目标函数中，引入了惩罚项$\Omega$ 来度量模型复杂度，最终的目标函数等式是 $Obj(\Theta)=L(\Theta)+\Omega(\Theta)$。模型最终通过损失函数和惩罚项来平衡偏差和方法，同时引入了一阶和二阶导数的 **泰勒展开式** 来训练损失函数，此外在基学习器中可以选择使用 gbtree 的树或者 gblinear 的线性分类器，以此建立一个稳定良好的模型。
+
+`XGBoost` ，它也是依赖于**决策树融合**，因此在调试参数的时候需要从树深度、学习率等角度进行调试参数$^{[3]}$。
 
 
 
@@ -312,15 +314,11 @@ Kurtosis:            19.855         Condition No.:        1
 
 `XGBoost` 是基于 `Gradient Boosting Decision Tree` 的算法，它不仅可以被用于解决分类问题还有可以解决回归问题。在算法上，它依据通过将多个弱分类器组合，同时结合了梯度下降的算法来最小化损失以提高准确率。而且它具有计算速度快，模型表现好的特点——这在目前的 `kaggle` 竞赛结果中已有体现。
 
-
-
 ## $\rm III.$ 方法
 
 
 
 ### 3.1 数据预处理
-
-
 
 #### 3.1.1 异常值处理
 
@@ -419,7 +417,7 @@ Name: 993496, dtype: object
 
 #### 3.2.1 数据拆分与模型测试
 
-在项目中，使用了 `train_test_split` 方法将数据集拆分为训练数据集和验证数据集，并且将 35% 的数据随机划分给验证数据集中。
+在项目中，因为是时间序列的分析，调整了最初方案使用 `train_test_split` 来分割数据，使用了**最后几周时间间隔数据作为验证数据集**，而时间间隔上使用了测试数据集同等的间隔。
 
 首先将所有的特征进行训练以此来确认可用的重要特征。此过程中使用的 `XGBoost` 的参数如下：
 
@@ -446,7 +444,7 @@ param = {"max_depth":5,
 
 #### 3.2.2 特征选择和模型调参
 
-根据上面特征重要性分析结果，选择重要性得分在前 25% 的特征作为基本特征（绿色部分）；此外还从后 50% 特种（红色部分）中选择了前 10 个特征作为补充特征。这样最终构建了训练数据中的特征。
+根据上面特征重要性分析结果，选择重要性得分在前 25% 的特征作为基本特征（绿色部分）；此外还从后 50% 特征（红色部分）中选择了前 10 个特征作为补充特征。这样最终构建了训练数据中的特征。
 
 在本次的模型中，首先调参从属性模型的角度来考虑调整 `max_depth`，`subsample`， `colsample_bytree` $^{[3, 4]}$；为了获得更多可能的弱学习器，考虑调整 `eta`； `num_round` 和 `early_stopping_rounds` 用于控制迭代循环；此外为了调整惩罚项，增加了 `lambda` 参数。
 
@@ -460,12 +458,12 @@ param = {"max_depth":5,
 params = {"objective": "reg:linear",
           "booster": "gbtree",
           "eta": 0.01,
-          "max_depth": 16,
+          "max_depth": 14,
           "min_child_weight": 6,
           "subsample": 0.6,
           "colsample_bytree": 0.4,
           "silent": 1,
-          "lambda": 0.2
+          "lambda": 0.1,
           "seed": 1301}
 ```
 
@@ -473,13 +471,13 @@ params = {"objective": "reg:linear",
 
 | Train RMSPE | Eval RMSPE |
 | ----------- | ---------- |
-| 0.006006    | 0.0101     |
+| 0.006689    | 0.012486   |
 
 最终将得到的结果上传进行验证：
 
 | Private Score | Public Score |
 | ------------- | ------------ |
-| 0.11824       | 0.10375      |
+| 0.11629       | 0.10743      |
 
 
 
@@ -499,7 +497,7 @@ params = {"objective": "reg:linear",
 
 ### 4.2 合理性分析
 
-从最初建立的模型到最终确立的模型来看，两次的 `RMSPE` 得分值都偏小，也就是满足了项目在设定之初对稳健性的要求。虽然没有达到最初在基准模型上要求的 `0.11773`，但是最终得 Private Score 是 `0.11824` ，这已经非常接近最终的要求了。
+从最初建立的模型到最终确立的模型来看，两次的 `RMSPE` 得分值都偏小，也就是满足了项目在设定之初对稳健性的要求。虽然没有达到最初在基准模型上要求的 `0.11773`，但是最终得 Private Score 是 `0.11629` ，这已经达到了最终的要求。
 
 
 
@@ -515,25 +513,25 @@ params = {"objective": "reg:linear",
 
 首先对每家商店的实际销售和预测销售额的差异百分比进行分析：
 
-![percentage_sales_difference_store](img/percentage_sales_difference_store.png)
+![fix_percentage_sales_difference_store](img/fix_percentage_sales_difference_store.png)
 
 接下来是对不同营业日期中实际销售额和预测销售额的差异百分比进行分析：
 
-![percentage_sales_difference_date](img/percentage_sales_difference_date.png)
+![fix_percentage_sales_difference_date](img/fix_percentage_sales_difference_date.png)
 
-从以上的结果来看，如果对商店整体的预测值和实际值之间差异进行分析，对于某些商店的预测稳定性和预测的效果还是比较高的，但是在某些商店上面还是缺乏稳定性。从日期的角度来分析商店的预测值和实际值之间差异，日期角度的波动性要小一些，但是波动范围却要更大很多。整体的分析不论是稳定性还是预测的效果，从整体的日期来来看都是比较差一些的。
+从以上的结果来看，如果对商店整体的预测值和实际值之间差异进行分析，对于某些商店的预测稳定性和预测的效果整体还是比较高的，但是在某些商店上面还是缺乏稳定性。从日期的角度来分析商店的预测值和实际值之间差异，日期角度的波动性要小一些，但是波动范围却要也相对更小一些。整体的分析不论是稳定性还是预测的效果，从整体的日期来来看都是比较好一些的。
 
-在以上的商店的差异值中，存在最大差异值。为了深入的了解对连续六周的预测稳定性，以及最大差异值具体的分布情况。从数据中确认了差异值的均值和标准差最大的商店，是 329 和 570。因此对这两家商店的最后三个月实际销售额和预测销售额的差异。
+在以上的商店的差异值中，存在最大差异值。为了深入了解连续六周的预测稳定性，以及最大差异值具体的分布情况。从数据中确认了差异值的均值和标准差最大的商店，是 274 和 292。因此对这两家商店的最后六周实际销售额和预测销售额的差异。
 
-下图为 329 号商店的销售额比较：
+下图为 274 号商店的销售额比较：
 
-![sales_predict_store329](img/sales_predict_store329.png)
+![fix_sales_predict_store274](img/fix_sales_predict_store274.png)
 
-下图是 570 号商店的销售额比较：
+下图是 292 号商店的销售额比较：
 
-![sales_predict_store570](img/sales_predict_store570.png)
+![fix_sales_predict_store292](img/fix_sales_predict_store292.png)
 
-从上面的结果可以看出整体的预测上，准确性以及稳定性都是比较高的，也就是说模型基本上满足了稳定性的要求。
+从上面的结果可以看出整体的预测上，准确性以及稳定性都是比较高的，即使是在平均值最大的 274 号商店中得到的差异稳定行也是比较高的，而 294 号商店是因为中间三个日期的差异加大而导致整体的稳定性不是很好，但是整体上来看模型基本上满足了稳定性的要求。
 
 
 
@@ -547,13 +545,17 @@ params = {"objective": "reg:linear",
 
 项目过程中遇到的困难还是多方面，一是对 `XGBoost` 的模型理解，它是整个项目基础从理解它的算法到参数选项都进行不断地尝试和学习。对数据的理解是一个方面，特别是在特征选择过程中参考了特征重要得分、特征相关性，但是两者之间没有融汇贯通还是难以进行深度分析。另外就是最终主要还是依赖于参数调整，来达到最终的项目要求。
 
-从项目的结果来看，虽然达到了项目要求，但是在细节问题上尚未有明确的了解，例如融合问题——没有想到一个好的方式来解决融合。但是在解决时间序列的回归问题上还是有一定的通用性，从数据的处理到模型构建过程都有可取之处。
+从项目的结果来看，虽然达到了项目要求，但是因为该项目中使用的是高相关度单模型进行模型训练，所以直接使用模型融合的方式不是优化方式。后期可以尝试使用多种特征训练，得到相关度不高的模型结果之后可以考虑尝试进行模型融合。
 
 
 
 ### 5.3 需要做出的改进
 
-首先来说，该结果并没有发挥出融合模型的优势，在结果上太依赖于调试参数来得到结果。另外整个项目耗时太长，但是缺乏其他方式或者算法的尝试，为了平均最终的效果应该从更多的角度来考虑或者说尝试，这就包括 `CART` 算法没有进行尝试。以目前的状态来考虑，可以有话的方面是特征选择——项目中尚未发掘出特征选择的优势；此外还有就是尝试使用其他技术，例如深度学习，以神经网络的方式来构建模型。
+首先来说，该结果并没有发挥出融合模型的优势，在结果上太依赖于调试参数来得到结果。另外整个项目耗时太长，同时缺乏其他方式或者算法的尝试。目前的思考可以从以下角度进行改进：
+
+1. 特征挖掘 以目前的状态来考虑，项目中还有尚未发掘出特征选择的优势
+2. 其他 `boosting` 模型，例如 CART，lightGBM
+3. 在深度学习的角度来解决该问题，目前已经有前人使用 `Entity Embedding` 的方式来进行预测分析。并且取得非常良好的结果
 
 
 
@@ -561,9 +563,10 @@ params = {"objective": "reg:linear",
 
 ## $\rm VI.$参考
 
-1. [Gradient boosting](https://en.wikipedia.org/wiki/Gradient_boosting)
-2. [Introduction to Boosted Trees ](https://xgboost.readthedocs.io/en/latest/tutorials/model.html)
-3. [Python API Reference](https://xgboost.readthedocs.io/en/latest/python/python_api.html)
+1. [Gradient boosting](https://en.wikipedia.org/wiki/Gradient_boosting).
+2. [Introduction to Boosted Trees ](https://xgboost.readthedocs.io/en/latest/tutorials/model.html).
+3. [Python API Reference](https://xgboost.readthedocs.io/en/latest/python/python_api.html).
 4. [机器学习系列(12)_XGBoost参数调优完全指南（附Python代码）](https://blog.csdn.net/han_xiaoyang/article/details/52665396)
 5. [A Journey through Rossmann Stores.](https://www.kaggleusercontent.com/kf/106951/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..Waj-Z1GxxIgh23xsbs4Ngg.f9nJJwNdjWqHqoz5u864wMEFCjrp273ZBgf-Xranw1DHHK--MnhX4RV661nPEOBR9zdTjhMN4SiFJ7DevEmFq31QxKl7l-xOdYw-aDiM7MGjwocGMKsc1G8dMnUxw6BEuH19F-L22iBnEPC8zmo485Uxz1eeRMogdY8AjO58qhs.h6ejXSs2vKEPhxgtivBn9A/output.html)
 6. [Rossmann Exploratory Analysis.](https://www.kaggleusercontent.com/kf/124149/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.._fhhtixYhS4PxlWDXvVKfQ.sIgrnBLygm4AHX58Kw-2zBIdDTvbSS8YleTFWFSOXDV7_FnARDpIhGMax9TeFadYq-W9InNhlYV94S5SzIkV7NiQR_hA6aaJk7WOGqcbdU3Ng4tXxnzC_g4a4pyHPd5Z69zLBtOmiInL6DREtH7X6Q.aU-WTP6xkcqTsmJ8vIk4dA/output.html)
+7. [XGBoost 与 Boosted Tree](http://www.52cs.org/?p=429).
