@@ -7,3 +7,6 @@
 P6_Capstone/progress/test.ipynb
 P6_Capstone/modelBuildNote.md
 .vscode/settings.json
+model.ipynb
+gitignore
+*.pdf

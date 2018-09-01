@@ -30,13 +30,15 @@ Rossmann是欧洲的一家连锁药店。 在这个源自Kaggle比赛[Rossmann S
 
 2. 项目相关代码
 
-   | 文件夹名称 |    文件名     |        文件说明        |
-   | :--------: | :-----------: | :--------------------: |
-   |   `tool`   | preprocess.py |     数据预处理代码     |
-   |   `tool`   | evaluation.py | 用于评估模型的指标代码 |
-   |    tool    | buildmodel.py | 用于构建模型的相关代码 |
-
-   
+   |  文件夹名称  |        文件名        |        文件说明        |
+   | :----------: | :------------------: | :--------------------: |
+   |    `tool`    |    preprocess.py     |     数据预处理代码     |
+   |    `tool`    |    evaluation.py     | 用于评估模型的指标代码 |
+   |    `tool`    |    buildmodel.py     | 用于构建模型的相关代码 |
+   | `preprocess` | ModelAndReport.ipynb |  用于最终完成模型构建  |
+   | `preprocess` |  ExploreData.ipynb   |    用于探索数据信息    |
+   | `preprocess` | ModelAndReport.ipynb |    用于初期创建模型    |
+   |              |                      |                        |
 
 3. 包含使用的库，机器硬件，机器操作系统，训练时间等数据的 README 文档
 
@@ -48,11 +50,8 @@ Rossmann是欧洲的一家连锁药店。 在这个源自Kaggle比赛[Rossmann S
 
    * 最终评分
 
-     ![image-20180818172052520](img/score.png)
+     ![image-20180901144444686](img/final_score.png)
 
 
 ### 参考
 比赛第一名的[采访](http://blog.kaggle.com/2015/12/21/rossmann-store-sales-winners-interview-1st-place-gert/)及[参考资料](https://www.kaggle.com/c/rossmann-store-sales/forums/t/18024/model-documentation-1st-place)。
-
-
-
